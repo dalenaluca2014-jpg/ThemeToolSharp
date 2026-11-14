@@ -1,0 +1,31 @@
+
+name: Build ThemeToolSharp
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [master]
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Download source
+        uses: actions/checkout@v4
+
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v2
+
+      - name: Restore packages
+        run: nuget restore ThemeToolSharp.sln
+
+      - name: Compile
+        run: msbuild ThemeToolSharp.sln /p:Configuration=Release /m
+
+      - name: Upload EXE
+        uses: actions/upload-artifact@v4
+        with:
+          name: ThemeToolSharp
+          path: '**/bin/Release/*'
+          if-no-files-found: error
